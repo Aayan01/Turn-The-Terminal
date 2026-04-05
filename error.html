@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>bruh. 💀</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <style>
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .shake { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both infinite; transform: translate3d(0, 0, 0); }
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+        .countdown-bar {
+            width: 100%;
+            height: 4px;
+            background: #9f403d;
+            /* UPDATED: Changed animation duration from 3s to 10s */
+            animation: shrink 10s linear forwards; 
+            transform-origin: left;
+        }
+        @keyframes shrink {
+            from { transform: scaleX(1); }
+            to { transform: scaleX(0); }
+        }
+    </style>
+    <script id="tailwind-config">
+        // Exact same config as your other pages
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-background": "#323232", "inverse-on-surface": "#9e9c9c", "secondary-container": "#dbe1ff",
+                        "surface-container-lowest": "#ffffff", "surface-dim": "#dbd9d9", "inverse-surface": "#0e0e0e",
+                        "outline": "#7b7a7a", "on-secondary": "#faf8ff", "on-primary": "#faf7f6", "secondary-fixed": "#dbe1ff",
+                        "primary-fixed-dim": "#d7d4d3", "inverse-primary": "#ffffff", "on-tertiary": "#faf8ff",
+                        "primary-fixed": "#e5e2e1", "primary-container": "#e5e2e1", "on-secondary-fixed": "#003798",
+                        "surface-tint": "#5f5e5e", "error-container": "#fe8983", "on-primary-fixed": "#403f3f",
+                        "on-tertiary-container": "#000000", "surface-container": "#f0eded", "primary": "#5f5e5e",
+                        "background": "#fcf8f8", "secondary-dim": "#0049c2", "surface-container-high": "#eae7e7",
+                        "on-primary-container": "#525151", "outline-variant": "#b3b1b1", "on-error": "#fff7f6",
+                        "on-tertiary-fixed-variant": "#f9f7ff", "surface-bright": "#fcf8f8", "error-dim": "#4e0309",
+                        "surface-container-highest": "#e4e2e1", "tertiary-fixed": "#3e76fe", "surface": "#fcf8f8",
+                        "on-surface-variant": "#5f5f5f", "surface-variant": "#e4e2e1", "on-secondary-container": "#0048bf",
+                        "error": "#9f403d", "tertiary-dim": "#0049c2", "surface-container-low": "#f6f3f2", "tertiary": "#0053dc",
+                        "on-surface": "#323232", "tertiary-container": "#3e76fe", "secondary": "#0053dc",
+                        "on-primary-fixed-variant": "#5c5b5b", "on-secondary-fixed-variant": "#0050d4",
+                        "tertiary-fixed-dim": "#2d68f0", "secondary-fixed-dim": "#c7d3ff", "on-tertiary-fixed": "#ffffff",
+                        "primary-dim": "#535252", "on-error-container": "#752121"
+                    },
+                    "fontFamily": { "headline": ["Manrope"], "body": ["Inter"], "mono": ["JetBrains Mono", "monospace"] }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-inverse-surface text-on-primary font-mono overflow-y-auto min-h-screen flex flex-col items-center justify-center relative selection:bg-error selection:text-white p-6">
+    
+    <div class="fixed inset-0 pointer-events-none z-[-1]">
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-error-dim opacity-10 blur-[100px]"></div>
+    </div>
+
+    <main class="w-full max-w-3xl relative z-10 flex flex-col items-center text-center">
+        
+        <h1 class="text-6xl md:text-8xl font-black text-error mb-4 tracking-tighter shake">bruh. 💀</h1>
+        
+        <div class="text-inverse-on-surface mb-8 space-y-2">
+            <p class="text-xl font-bold text-[#faf7f6]">caught in 4k lacking the auth_key.</p>
+            <p class="text-sm">major <b>L</b> + massive skill issue + touch grass.</p>
+        </div>
+        
+        <div class="w-full max-w-lg border-2 border-error/30 rounded-2xl overflow-hidden shadow-[0_0_40px_rgba(159,64,61,0.2)] mb-8 bg-black relative flex flex-col items-center justify-center p-8">
+            <span class="material-symbols-outlined text-6xl text-error mb-4 animate-pulse" data-icon="flight_takeoff">flight_takeoff</span>
+            <p class="text-[#faf7f6] mb-2 font-bold tracking-widest uppercase">Banishing to YouTube...</p>
+            <p class="text-[#5f5e5e] text-xs mb-6">Dispatching you to the shadow realm in 10 seconds.</p>
+            
+            <a href="https://youtu.be/KaUOJYQuakU?t=65" target="_blank" class="bg-error/20 border border-error hover:bg-error hover:text-on-error text-error px-6 py-2 text-xs font-bold uppercase tracking-widest transition-all rounded-full">
+            Skip Countdown ↗
+            </a>
+
+            <div class="absolute bottom-0 left-0 w-full bg-[#5f5e5e]/20">
+                <div class="countdown-bar"></div>
+            </div>
+        </div>
+
+        <div class="bg-[#0e0e0e] border border-[#5f5e5e]/30 p-4 rounded-lg text-left w-full max-w-lg mb-8 text-xs text-[#5f5e5e]">
+            <div class="flex gap-2 mb-1"><span class="text-error">root@system:</span><span>tail -f /var/log/auth.log</span></div>
+            <div>[FATAL] User attempted to guess the PIN.</div>
+            <div class="text-secondary">[HINT] The valid auth_key is hidden in the upcoming video log. Watch closely.</div>
+            <div>[INFO] Banishment protocol initiated...</div>
+        </div>
+
+    </main>
+
+    <script>
+    setTimeout(() => {
+        // Attempt to open the video in a completely new tab
+        let newTab = window.open("https://youtu.be/KaUOJYQuakU?t=65", "_blank");
+        
+        // Safety Check: If the browser's popup blocker stopped the script
+        if (!newTab || newTab.closed || typeof newTab.closed == 'undefined') {
+            alert("Your browser blocked the automatic redirect! Please click the 'Skip Countdown' button manually.");
+        }
+    }, 10000);
+</script>
+</body>
+</html>

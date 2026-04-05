@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Turn the Terminal</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .mono-font {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        #terminal-output-container::-webkit-scrollbar {
+            width: 4px;
+        }
+        #terminal-output-container::-webkit-scrollbar-thumb {
+            background: #5f5e5e33;
+            border-radius: 2px;
+        }
+        .log-entry {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* Matrix Theme Override */
+        body.theme-matrix {
+            background-color: #050505 !important;
+        }
+        body.theme-matrix * {
+            color: #00FF41 !important;
+            border-color: #00FF41 !important;
+        }
+        body.theme-matrix [class*="bg-"] {
+            background-color: transparent !important;
+        }
+    </style>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-background": "#323232", "inverse-on-surface": "#9e9c9c", "secondary-container": "#dbe1ff",
+                        "surface-container-lowest": "#ffffff", "surface-dim": "#dbd9d9", "inverse-surface": "#0e0e0e",
+                        "outline": "#7b7a7a", "on-secondary": "#faf8ff", "on-primary": "#faf7f6", "secondary-fixed": "#dbe1ff",
+                        "primary-fixed-dim": "#d7d4d3", "inverse-primary": "#ffffff", "on-tertiary": "#faf8ff",
+                        "primary-fixed": "#e5e2e1", "primary-container": "#e5e2e1", "on-secondary-fixed": "#003798",
+                        "surface-tint": "#5f5e5e", "error-container": "#fe8983", "on-primary-fixed": "#403f3f",
+                        "on-tertiary-container": "#000000", "surface-container": "#f0eded", "primary": "#5f5e5e",
+                        "background": "#fcf8f8", "secondary-dim": "#0049c2", "surface-container-high": "#eae7e7",
+                        "on-primary-container": "#525151", "outline-variant": "#b3b1b1", "on-error": "#fff7f6",
+                        "on-tertiary-fixed-variant": "#f9f7ff", "surface-bright": "#fcf8f8", "error-dim": "#4e0309",
+                        "surface-container-highest": "#e4e2e1", "tertiary-fixed": "#3e76fe", "surface": "#fcf8f8",
+                        "on-surface-variant": "#5f5f5f", "surface-variant": "#e4e2e1", "on-secondary-container": "#0048bf",
+                        "error": "#9f403d", "tertiary-dim": "#0049c2", "surface-container-low": "#f6f3f2", "tertiary": "#0053dc",
+                        "on-surface": "#323232", "tertiary-container": "#3e76fe", "secondary": "#0053dc",
+                        "on-primary-fixed-variant": "#5c5b5b", "on-secondary-fixed-variant": "#0050d4",
+                        "tertiary-fixed-dim": "#2d68f0", "secondary-fixed-dim": "#c7d3ff", "on-tertiary-fixed": "#ffffff",
+                        "primary-dim": "#535252", "on-error-container": "#752121"
+                    },
+                    "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                    "fontFamily": { "headline": ["Manrope"], "body": ["Inter"], "label": ["Inter"], "mono": ["JetBrains Mono", "monospace"] }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-inverse-surface text-on-primary font-body overflow-x-hidden selection:bg-tertiary selection:text-white transition-colors duration-500">
+
+<header class="bg-[#0e0e0e] text-[#0053dc] font-mono uppercase tracking-widest text-sm w-full top-0 left-0 border-b border-[#5f5e5e]/20 flex justify-between items-center px-6 py-3 fixed z-50">
+    <div class="text-lg font-bold text-[#faf7f6]">ROOT@CYBER_CONSULTANT: ~</div>
+    <nav class="hidden md:flex gap-8">
+        <a class="text-[#0053dc] border-b border-[#0053dc] transition-colors duration-150 ease-in-out" href="javascript:void(0)" onclick="executeCommand('help')">man</a>
+        <a class="text-[#5f5e5e] hover:text-[#faf7f6] hover:bg-[#5f5e5e]/10 transition-colors duration-150 ease-in-out px-2" href="javascript:void(0)" onclick="executeCommand('ssh')">ssh</a>
+        <a class="text-[#5f5e5e] hover:text-[#faf7f6] hover:bg-[#5f5e5e]/10 transition-colors duration-150 ease-in-out px-2" href="javascript:void(0)" onclick="executeCommand('status')">status</a>
+        <a class="text-[#5f5e5e] hover:text-[#faf7f6] hover:bg-[#5f5e5e]/10 transition-colors duration-150 ease-in-out px-2" href="javascript:void(0)" onclick="location.reload()">exit</a>
+    </nav>
+    <div class="flex items-center gap-4">
+        <span class="material-symbols-outlined text-[#5f5e5e] cursor-pointer" data-icon="terminal">terminal</span>
+        <span class="material-symbols-outlined text-[#5f5e5e] cursor-pointer" data-icon="fingerprint">fingerprint</span>
+    </div>
+</header>
+
+<aside class="fixed left-0 top-0 h-full w-64 bg-[#0e0e0e] border-r border-[#5f5e5e]/20 flex flex-col py-8 hidden lg:flex pt-20">
+    <div class="px-6 mb-10">
+        <div class="font-black text-[#faf7f6] text-xl mb-1" id="sidebar-id">ADM_SYS_01</div>
+        <div class="font-mono text-xs text-[#0053dc] opacity-80 uppercase tracking-tighter" id="sidebar-role">Access Level: User</div>
+    </div>
+    <nav class="flex-1 flex flex-col gap-2">
+        <a class="text-[#faf7f6] bg-[#0053dc]/10 border-l-4 border-[#0053dc] font-mono text-xs px-6 py-4 flex items-center gap-3 scale-95 transition-transform duration-75" href="javascript:void(0)" onclick="executeCommand('sys_info')">
+            <span class="material-symbols-outlined" data-icon="settings">settings</span> System
+        </a>
+        <a class="text-[#5f5e5e] hover:bg-[#5f5e5e]/5 font-mono text-xs px-6 py-4 flex items-center gap-3 scale-95 transition-transform duration-75" href="javascript:void(0)" onclick="executeCommand('tree')">
+            <span class="material-symbols-outlined" data-icon="lan">lan</span> Filesystem
+        </a>
+        <a class="text-[#5f5e5e] hover:bg-[#5f5e5e]/5 font-mono text-xs px-6 py-4 flex items-center gap-3 scale-95 transition-transform duration-75" href="javascript:void(0)" onclick="executeCommand('logs')">
+            <span class="material-symbols-outlined" data-icon="description">description</span> Logs
+        </a>
+        <a class="text-[#5f5e5e] hover:bg-[#5f5e5e]/5 font-mono text-xs px-6 py-4 flex items-center gap-3 scale-95 transition-transform duration-75" href="javascript:void(0)" onclick="executeCommand('socials')">
+            <span class="material-symbols-outlined" data-icon="hub">hub</span> Network
+        </a>
+    </nav>
+    <div class="px-6 mt-auto">
+        <div class="p-4 bg-[#5f5e5e]/5 rounded-lg border border-[#5f5e5e]/10">
+            <div class="text-[10px] text-[#5f5e5e] mb-2 uppercase tracking-widest">Session Time</div>
+            <div class="font-mono text-[#0053dc]" id="uptime-clock">00:00:00:00</div>
+        </div>
+    </div>
+</aside>
+
+<main class="lg:ml-64 pt-24 pb-12 px-6 md:px-12 min-h-screen max-w-5xl flex flex-col">
+    <div class="flex-1 overflow-y-auto mb-8 pr-4" id="terminal-output-container">
+        <section class="mono-font space-y-8 text-sm md:text-base" id="terminal-history">
+            <div class="group">
+                <div class="flex items-center gap-3 mb-2">
+                    <span class="text-tertiary">#</span>
+                    <span class="text-[#faf7f6] font-bold">whoami</span>
+                </div>
+                <div class="text-inverse-on-surface pl-6 border-l border-[#5f5e5e]/30 py-1" id="">
+                    <p>IDENTITY: AAYAN_NAYAK.SEC</p>
+                    <p>ROLE: ADMIN</p>
+                    <P>SPECIALIZATION: VAPT: APPSEC, NETWORK // AIPT // SOURCE CODE REVIEW // CLOUD CONFIG REVIEW</P>
+                    <p class="text-[10px] text-[#5f5e5e] mt-1">Hint: Try 'help' or 'neofetch'</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="pt-8 mt-12 border-t border-[#5f5e5e]/10">
+            <div class="flex items-center gap-3 relative">
+                <span id="dynamic-prompt" class="text-secondary shrink-0">root@system:/home/root$</span>
+                <div class="flex items-center flex-1 relative">
+                    <input autocomplete="off" autofocus="" class="bg-transparent border-none outline-none text-[#faf7f6] font-mono w-full p-0 focus:ring-0" id="terminal-input" spellcheck="false" type="text"/>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="mt-8">
+        <div class="group">
+            <div class="grid grid-cols-12 gap-4">
+                <div class="col-span-12 p-6 bg-[#0e0e0e] rounded-xl border border-[#5f5e5e]/20 font-mono text-[11px] overflow-hidden">
+                    <div class="flex items-center justify-between mb-4 pb-2 border-b border-[#5f5e5e]/20">
+                        <span class="text-[#5f5e5e]">LATEST_LOG_STREAM</span>
+                        <span class="text-error text-[9px] animate-pulse">● LIVE</span>
+                    </div>
+                    <div class="space-y-1 max-h-32 overflow-y-auto scroll-smooth" id="log-stream">
+                        <div class="flex gap-4"><span class="text-[#5f5e5e] shrink-0">00:00:01</span> <span class="text-secondary">[SYS]</span> <span class="text-inverse-on-surface truncate">TERMINAL INSTANCE INITIATED</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="fixed inset-0 pointer-events-none z-[-1] opacity-[0.03] overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-full" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDST1QS-f_h6HvJNuoIZNXTZkzzcwKKDhdc7MQoigvcLhrFgeHRgp59D-SdjpC7_3IsTpIrwmuc9abMdzatZFJwYDDgMRXEdPTJzWhmH-he8NEkNwG8SlrJBvFa6DNr0cxcS7G2DSj3chbWqXDuIOKjF_ckjgQGZxBJyIat8USPWzOQXnkpWqNpbQFGWSXSGmp6IQGQi7Fe-PYPg8n8iN7h05KnmLdMhjgDI7TtiXoHBBBxhvKjNnPTKxjITzvLtlO2x1JzlfhOkn6d');"></div>
+        <div class="absolute -top-1/4 -right-1/4 w-1/2 h-1/2 bg-tertiary rounded-full blur-[160px]"></div>
+    </div>
+
+    <div id="contact-modal" class="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md hidden flex items-center justify-center opacity-0 transition-opacity duration-300">
+        <div class="bg-[#0a0a0a] border border-[#5f5e5e]/40 p-8 w-full max-w-md shadow-[0_0_50px_rgba(0,83,220,0.1)] relative">
+            <button onclick="closeContactModal()" class="absolute top-4 right-4 text-[#5f5e5e] hover:text-error transition-colors">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+            <h2 class="text-xl font-bold text-tertiary mb-1 uppercase tracking-widest flex items-center gap-2">
+                <span class="material-symbols-outlined text-lg">radar</span> Secure_Comms
+            </h2>
+            <p class="text-xs text-[#5f5e5e] mb-6 font-mono border-b border-[#5f5e5e]/20 pb-4">Initiate a secure transmission to Aayan.</p>
+
+            <form id="contact-form" class="space-y-4 font-mono">
+                <div>
+                    <label class="block text-[10px] text-[#faf7f6] mb-1 uppercase">Transmission_ID (Name/Company)</label>
+                    <input type="text" id="comm_name" required class="w-full bg-[#0e0e0e] border border-[#5f5e5e]/30 text-[#faf7f6] text-xs p-2 focus:outline-none focus:border-tertiary" placeholder="_">
+                </div>
+                <div>
+                    <label class="block text-[10px] text-[#faf7f6] mb-1 uppercase">Return_Vector (Email/Phone)</label>
+                    <input type="text" id="comm_contact" required class="w-full bg-[#0e0e0e] border border-[#5f5e5e]/30 text-[#faf7f6] text-xs p-2 focus:outline-none focus:border-tertiary" placeholder="_">
+                </div>
+                <div>
+                    <label class="block text-[10px] text-[#faf7f6] mb-1 uppercase">Payload (Message)</label>
+                    <textarea id="comm_message" required rows="3" class="w-full bg-[#0e0e0e] border border-[#5f5e5e]/30 text-[#faf7f6] text-xs p-2 focus:outline-none focus:border-tertiary resize-none" placeholder="_"></textarea>
+                </div>
+                
+                <div class="pt-4 flex justify-between items-center">
+                    <span id="comm-status" class="text-[10px] text-tertiary animate-pulse hidden">ENCRYPTING & SENDING...</span>
+                    <button type="submit" class="bg-tertiary/10 border border-tertiary text-tertiary hover:bg-tertiary hover:text-white px-6 py-2 text-xs uppercase tracking-widest transition-all ml-auto">
+                        Transmit
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+
+<footer class="lg:ml-64 px-12 py-8 border-t border-[#5f5e5e]/10 flex flex-col md:flex-row justify-between items-center gap-4 opacity-40">
+    <div class="font-mono text-[10px] text-[#5f5e5e]">
+        SYSTEM_INTEGRITY: 99.8% // ENCRYPTION: AES-256-GCM
+    </div>
+    <div class="font-mono text-[10px] text-[#5f5e5e]">
+        © 2026 AAYAN_NAYAK // ALL RIGHTS RESERVED
+    </div>
+</footer>
+
+<script>
+    // System Init and UI Hydration
+    window.addEventListener('DOMContentLoaded', () => {
+        const savedIdentity = localStorage.getItem('ttt_identity') || 'AAYAN_NAYAK';
+        const savedRole = localStorage.getItem('ttt_role') || 'CONSULTANT';
+        
+        document.getElementById('initial-whoami').innerHTML = `
+            <p>IDENTITY: ${savedIdentity}.SEC</p>
+            <p>ROLE: ${savedRole}</p>
+            <p class="text-[10px] text-[#5f5e5e] mt-1">Hint: Try 'whoami --verbose'</p>
+        `;
+        document.getElementById('sidebar-id').innerText = savedIdentity;
+        document.getElementById('sidebar-role').innerText = `Access Level: ${Rolesaved}`;
+        
+        addLog('AUTH', `SUCCESSFUL LOGIN: ${savedIdentity}`);
+    });
+
+    // Terminal State
+    const terminalInput = document.getElementById('terminal-input');
+    const terminalHistory = document.getElementById('terminal-history');
+    const logStream = document.getElementById('log-stream');
+    let history = [];
+    let historyIndex = -1;
+    let currentDir = '/home/root';
+    
+    // Virtual File System
+    const fileSystem = {
+        "/home/root": ["aayan/", "restricted_archives/"],
+        "/home/root/aayan": ["cv.pdf", "public_profile/", "work_exp.txt", "projects.txt"],
+        "/home/root/aayan/public_profile": ["github.lnk", "linkedin.lnk", "contact.txt"]
+    };
+
+    const fileContents = {
+        "/home/root/aayan/work_exp.txt": "2023-Present: Consultant at Elias Thorne<br>Specialization: VAPT, Adversarial Emulation.",
+        "/home/root/aayan/projects.txt": "1. Automation in Network PT<br>2. AI PT Scope Document (EU AI Act)",
+        "/home/root/aayan/public_profile/contact.txt": "Type 'contact' in the terminal to initialize secure comms.<br>Phone: +91-XXXXXXXXXX<br>Email: aayan@example.com",
+        "/home/root/aayan/public_profile/github.lnk": "https://github.com/yourusername",
+        "/home/root/aayan/public_profile/linkedin.lnk": "https://linkedin.com/in/yourusername"
+    };
+
+    document.getElementById('dynamic-prompt').innerText = `root@system:${currentDir}$`;
+
+    // Uptime simulation
+    let startTime = Date.now();
+    setInterval(() => {
+        const diff = Date.now() - startTime;
+        const h = Math.floor(diff / 3600000).toString().padStart(2, '0');
+        const m = Math.floor((diff % 3600000) / 60000).toString().padStart(2, '0');
+        const s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
+        const ms = Math.floor((diff % 1000) / 10).toString().padStart(2, '0');
+        document.getElementById('uptime-clock').innerText = `${h}:${m}:${s}:${ms}`;
+    }, 100);
+
+    // Command Registry
+    const commands = {
+        help: () => `
+            <div class="text-inverse-on-surface">
+                <p class="mb-2 font-bold text-tertiary">AVAILABLE COMMANDS:</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-1 text-sm">
+                    <div class="flex gap-4"><span class="w-16 font-bold text-[#faf7f6]">neofetch</span><span class="opacity-60">System & user specs</span></div>
+                    <div class="flex gap-4"><span class="w-16 font-bold text-[#faf7f6]">skills</span><span class="opacity-60">Visual tech stack</span></div>
+                    <div class="flex gap-4"><span class="w-16 font-bold text-[#faf7f6]">socials</span><span class="opacity-60">Professional links</span></div>
+                    <div class="flex gap-4"><span class="w-16 font-bold text-error">sudo</span><span class="opacity-60">Execute as superuser</span></div>
+                    <div class="flex gap-4"><span class="w-16 font-bold text-[#faf7f6]">analyze</span><span class="opacity-60">Audit current env</span></div>
+                    <div class="flex gap-4"><span class="w-16 font-bold text-[#faf7f6]">theme</span><span class="opacity-60">[matrix|default]</span></div>
+                    <div class="flex gap-4"><span class="w-16 font-bold text-[#faf7f6]">history</span><span class="opacity-60">Command history</span></div>
+                    <div class="flex gap-4"><span class="w-16 font-bold text-[#faf7f6]">tree</span><span class="opacity-60">Visual directory map</span></div>
+                    <div class="flex gap-4"><span class="w-16 font-bold text-[#faf7f6]">dir</span><span class="opacity-60">Analyze dir stats</span></div>
+                    <div class="flex gap-4"><span class="w-16 font-bold text-[#faf7f6]">ls</span><span class="opacity-60">List contents</span></div>
+                    <div class="flex gap-4"><span class="w-16 font-bold text-[#faf7f6]">cd</span><span class="opacity-60">Change directory</span></div>
+                    <div class="flex gap-4"><span class="w-16 font-bold text-[#faf7f6]">cat</span><span class="opacity-60">Read file contents</span></div>
+                    <div class="flex gap-4"><span class="w-16 font-bold text-[#faf7f6]">open</span><span class="opacity-60">Execute file/link</span></div>
+                    <div class="flex gap-4"><span class="w-16 font-bold text-tertiary">contact</span><span class="opacity-60">Secure message</span></div>
+                    <div class="flex gap-4"><span class="w-16 font-bold text-[#faf7f6]">whoami</span><span class="opacity-60">Display identity</span></div>
+                    <div class="flex gap-4"><span class="w-16 font-bold text-[#faf7f6]">clear</span><span class="opacity-60">Clear screen</span></div>
+                </div>
+            </div>`,
+        
+        clear: () => { terminalHistory.innerHTML = ''; return ''; },
+        
+        whoami: (args) => {
+            const identity = localStorage.getItem('ttt_identity') || 'AAYAN_NAYAK';
+            const role = localStorage.getItem('ttt_role') || 'CONSULTANT';
+            if (args[0] === '--verbose') {
+                return `
+                    <div class="text-inverse-on-surface space-y-1 border border-[#5f5e5e]/20 p-3 rounded bg-[#0e0e0e]/30 inline-block">
+                        <p>IDENTITY: <span class="text-tertiary font-bold">${identity}.SEC</span></p>
+                        <p>ROLE: <span class="text-tertiary">${role}</span></p>
+                        <p>CLEARANCE: <span class="text-error">LEVEL_0 (User)</span></p>
+                        <p>OBJECTIVE: Securing infrastructure & Agentic AI research.</p>
+                        <p>CERT_TRACK: OSCP (In Progress)</p>
+                        <p>LOCATION: IND</p>
+                    </div>`;
+            }
+            return `<div class="text-inverse-on-surface"><p>IDENTITY: <span class="text-tertiary">${identity}.SEC</span></p><p class="text-[10px] text-[#5f5e5e] mt-1">Hint: Try 'whoami --verbose'</p></div>`;
+        },
+
+        neofetch: () => `
+            <div class="flex flex-col md:flex-row gap-6 items-center text-inverse-on-surface my-2">
+                <div class="text-tertiary font-bold whitespace-pre text-xs md:text-sm leading-tight">
+      ___ 
+    / ___| 
+   | |     
+   | |___  
+    \\____| 
+                </div>
+                <div>
+                    <div class="text-[#faf7f6] font-bold border-b border-[#5f5e5e]/30 pb-1 mb-1">root@cyber_consultant</div>
+                    <div><span class="text-tertiary font-bold">OS:</span> Portfolio OS v2.0</div>
+                    <div><span class="text-tertiary font-bold">Host:</span> Aayan_Nayak</div>
+                    <div><span class="text-tertiary font-bold">Role:</span> Cyber Security Consultant</div>
+                    <div><span class="text-tertiary font-bold">Uptime:</span> ${document.getElementById('uptime-clock').innerText}</div>
+                    <div><span class="text-tertiary font-bold">Focus:</span> VAPT, AI Sec, Cloud Security</div>
+                    <div class="mt-2">
+                        <span class="inline-block w-4 h-4 bg-[#0e0e0e] mr-1 border border-[#5f5e5e]/50"></span>
+                        <span class="inline-block w-4 h-4 bg-error mr-1"></span>
+                        <span class="inline-block w-4 h-4 bg-tertiary mr-1"></span>
+                        <span class="inline-block w-4 h-4 bg-[#faf7f6]"></span>
+                    </div>
+                </div>
+            </div>`,
+
+        skills: () => `
+            <div class="text-inverse-on-surface space-y-1 font-mono text-sm max-w-sm">
+                <div class="flex justify-between"><span>Network PT</span><span class="text-tertiary">[████████████░░░]</span></div>
+                <div class="flex justify-between"><span>Web App Sec</span><span class="text-tertiary">[██████████████░]</span></div>
+                <div class="flex justify-between"><span>Agentic AI</span><span class="text-tertiary">[█████████░░░░░░]</span></div>
+                <div class="flex justify-between"><span>Python</span><span class="text-tertiary">[███████████░░░░]</span></div>
+                <div class="flex justify-between"><span>OSCP Prep</span><span class="text-tertiary">[███████░░░░░░░░]</span></div>
+            </div>`,
+
+        socials: () => `
+            <div class="space-y-2 text-inverse-on-surface">
+                <div><span class="text-tertiary w-24 inline-block">LinkedIn:</span> <a href="https://www.linkedin.com/in/aayan-nayak-921b2319b/" target="_blank" class="hover:text-[#faf7f6] underline">linkedin.com/in/Aayan-Nayak</a></div>
+                <div><span class="text-tertiary w-24 inline-block">GitHub:</span> <a href="https://github.com/Aayan01" target="_blank" class="hover:text-[#faf7f6] underline">github.com/Aayan01</a></div>
+                <div><span class="text-tertiary w-24 inline-block">Email:</span> <a href="mailto:aayan.nayak2001@gmail.com" class="hover:text-[#faf7f6] underline">aayan.nayak2001@gmail.com</a></div>
+            </div>`,
+
+        sudo: () => {
+            addLog('WARN', 'UNAUTHORIZED PRIVILEGE ESCALATION ATTEMPT');
+            return `<div class="text-error font-bold">User is not in the sudoers file. This incident will be reported.</div>`;
+        },
+
+        theme: (args) => {
+            const t = args[0];
+            const body = document.body;
+            if (t === 'matrix') {
+                body.classList.add('theme-matrix');
+                addLog('SYS', 'UI Overridden. Matrix protocol engaged.');
+                return `<div style="color: #00FF41">Theme set to: MATRIX</div>`;
+            } else if (t === 'default') {
+                body.classList.remove('theme-matrix');
+                addLog('SYS', 'UI restored to default.');
+                return `<div>Theme set to: DEFAULT</div>`;
+            }
+            return `<div class="text-error">Usage: theme [matrix|default]</div>`;
+        },
+
+        analyze: () => {
+            const ua = navigator.userAgent;
+            const res = `${window.innerWidth}x${window.innerHeight}`;
+            const id = `scan-${Date.now()}`;
+            
+            setTimeout(() => {
+                const el = document.getElementById(id);
+                if(el) {
+                    el.innerHTML = `
+                    <div class="text-secondary mb-1">[INFO] Target Acquired.</div>
+                    <div class="text-inverse-on-surface text-xs md:text-sm">[INFO] User-Agent: <span class="opacity-70">${ua}</span></div>
+                    <div class="text-inverse-on-surface text-xs md:text-sm">[INFO] Viewport: <span class="opacity-70">${res}</span></div>
+                    <div class="text-inverse-on-surface text-xs md:text-sm">[INFO] Network Ping: <span class="text-tertiary">${Math.floor(Math.random() * 50 + 10)}ms</span></div>
+                    <div class="text-error animate-pulse mt-3 border border-error/30 p-2 bg-error/5 inline-block">[WARN] Vulnerability detected in browser sandbox. Recommend immediate patching.</div>
+                    `;
+                    const container = document.getElementById('terminal-output-container');
+                    container.scrollTop = container.scrollHeight;
+                }
+            }, 1500);
+
+            return `<div id="${id}" class="text-secondary animate-pulse flex items-center gap-2"><span class="material-symbols-outlined spin">radar</span> Initializing deep scan protocol...</div>`;
+        },
+
+        tree: () => `
+            <div class="text-inverse-on-surface whitespace-pre font-mono text-sm">
+/home/root
+├── <span class="text-tertiary font-bold">restricted_archives/</span>
+│   └── <span class="text-error">[ENCRYPTED]</span>
+└── <span class="text-tertiary font-bold">aayan/</span>
+    ├── <span class="text-error">cv.pdf</span>
+    ├── projects.txt
+    ├── work_exp.txt
+    └── <span class="text-tertiary font-bold">public_profile/</span>
+        ├── contact.txt
+        ├── <span class="text-error">github.lnk</span>
+        └── <span class="text-error">linkedin.lnk</span>
+            </div>`,
+
+        history: () => {
+            if(history.length === 0) return `<div class="text-[#5f5e5e]">No history found.</div>`;
+            return `<div class="text-inverse-on-surface space-y-1 font-mono">` + 
+                history.map((cmd, i) => `<div class="flex gap-4"><span class="text-[#5f5e5e] w-4 text-right">${i+1}</span><span class="text-[#faf7f6]">${cmd}</span></div>`).join('') +
+                `</div>`;
+        },
+
+        dir: (args) => {
+            let targetDir = currentDir;
+            if (args[0]) {
+                const target = args[0].replace(/\/$/, "");
+                if (target === "..") {
+                    if (currentDir !== "/home/root") {
+                        targetDir = currentDir.substring(0, currentDir.lastIndexOf('/'));
+                        if (targetDir === "") targetDir = "/home"; 
+                    }
+                } else if (target.startsWith("/")) {
+                    targetDir = target;
+                } else {
+                    targetDir = currentDir === "/" ? `/${target}` : `${currentDir}/${target}`;
+                }
+            }
+
+            const contents = fileSystem[targetDir];
+            if (!contents) {
+                if (fileContents[targetDir] || targetDir.endsWith('.pdf')) {
+                    return `<div class="text-error">dir: ${args[0]}: Is a file. Cannot analyze contents.</div>`;
+                }
+                return `<div class="text-error">dir: ${args[0]}: No such file or directory</div>`;
+            }
+
+            let fileCount = 0; let folderCount = 0;
+            contents.forEach(item => item.endsWith('/') ? folderCount++ : fileCount++);
+
+            return `
+                <div class="text-inverse-on-surface font-mono border border-[#5f5e5e]/20 p-3 rounded bg-[#0e0e0e]/50 max-w-sm mt-1">
+                    <div class="text-tertiary text-xs uppercase tracking-widest mb-2 border-b border-[#5f5e5e]/20 pb-1">Directory Stats: ${targetDir}</div>
+                    <div class="flex justify-between text-sm mb-1"><span>Folders:</span><span class="text-secondary">${folderCount}</span></div>
+                    <div class="flex justify-between text-sm mb-1"><span>Files:</span><span class="text-secondary">${fileCount}</span></div>
+                    <div class="flex justify-between text-sm font-bold text-[#faf7f6] pt-1 mt-1 border-t border-[#5f5e5e]/20">
+                        <span>Total Objects:</span><span>${fileCount + folderCount}</span>
+                    </div>
+                </div>`;
+        },
+
+        cd: (args) => {
+            if (!args[0] || args[0] === '~') { currentDir = "/home/root"; return ''; }
+            const target = args[0].replace(/\/$/, ""); 
+            
+            if (target === "..") {
+                if (currentDir !== "/home/root") {
+                    currentDir = currentDir.substring(0, currentDir.lastIndexOf('/'));
+                    if (currentDir === "") currentDir = "/home"; 
+                }
+                return '';
+            }
+
+            const attemptPath = currentDir === "/" ? `/${target}` : `${currentDir}/${target}`;
+            
+            if (fileSystem[attemptPath]) {
+                currentDir = attemptPath;
+                return '';
+            } else if (fileContents[attemptPath] || attemptPath.endsWith('.pdf')) {
+                return `<div class="text-error">cd: ${target}: Not a directory</div>`;
+            } else {
+                return `<div class="text-error">cd: ${target}: No such file or directory</div>`;
+            }
+        },
+        ls: () => {
+            const contents = fileSystem[currentDir];
+            if (!contents) return '';
+            let output = '<div class="flex gap-4">';
+            contents.forEach(item => {
+                if (item.endsWith('/')) output += `<span class="text-tertiary font-bold">${item}</span>`;
+                else if (item.endsWith('.pdf') || item.endsWith('.lnk')) output += `<span class="text-error">${item}</span>`;
+                else output += `<span class="text-[#faf7f6]">${item}</span>`;
+            });
+            output += '</div>';
+            return output;
+        },
+        cat: (args) => {
+            if (!args[0]) return `<div class="text-error">cat: missing file operand</div>`;
+            const file = args[0];
+            const fullPath = `${currentDir}/${file}`;
+            if (fileContents[fullPath]) return `<div class="text-inverse-on-surface">${fileContents[fullPath]}</div>`;
+            if (fileSystem[fullPath]) return `<div class="text-error">cat: ${file}: Is a directory</div>`;
+            return `<div class="text-error">cat: ${file}: No such file or directory</div>`;
+        },
+        open: (args) => {
+            if (!args[0]) return `<div class="text-error">open: missing file operand</div>`;
+            const file = args[0];
+            if (file === "cv.pdf" && currentDir === "/home/root/aayan") {
+                window.open('C:\Users\mottm\Documents\Aayan\office 🐂💩\zz Interview Prep\Aayan Resume 2025-26\Aayan Nayak_Resume25', '_blank');
+                return `<div class="text-secondary">Opening cv.pdf in secure viewer...</div>`;
+            }
+            const fullPath = `${currentDir}/${file}`;
+            if (fileContents[fullPath] && file.endsWith('.lnk')) {
+                window.open(fileContents[fullPath], '_blank');
+                return `<div class="text-secondary">Establishing external connection...</div>`;
+            }
+            return `<div class="text-error">open: ${file}: Cannot open file type</div>`;
+        },
+        contact: () => {
+            const modal = document.getElementById('contact-modal');
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.classList.remove('opacity-0'), 10);
+            document.getElementById('comm_name').focus();
+            return `<div class="text-secondary">Opening secure transmission channel...</div>`;
+        },
+        pwd: () => `<div class="text-inverse-on-surface">${currentDir}</div>`,
+        date: () => `<div class="text-inverse-on-surface">${new Date().toISOString()}</div>`,
+        echo: (args) => `<div class="text-inverse-on-surface">${args.join(' ')}</div>`,
+        sys_info: () => `<div class="p-4 bg-[#5f5e5e]/5 rounded border border-[#5f5e5e]/10 py-2"><div class="text-[#5f5e5e] text-xs uppercase mb-2">Infrastructure Status</div><div class="flex items-center justify-between"><span class="text-[#faf7f6]">Nodes: 14/14</span><span class="px-2 py-0.5 bg-secondary/10 text-secondary text-[10px] rounded-full uppercase font-bold tracking-widest border border-secondary/20">Operational</span></div></div>`,
+        access_vault: () => `<div class="text-error">ACCESS DENIED. Missing proper clearance level.</div>`,
+        logs: () => { addLog('SYS', 'Dumping buffer...'); return `<div class="text-inverse-on-surface">Refer to the LATEST_LOG_STREAM below.</div>`; }
+    };
+
+    function addLog(type, message) {
+        const now = new Date();
+        const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+        const colorMap = { '[CMD]': 'text-tertiary', '[INFO]': 'text-secondary', '[WARN]': 'text-error', '[ERROR]': 'text-error font-bold', '[AUTH]': 'text-secondary', '[SYS]': 'text-[#faf7f6]', '[FILE]': 'text-secondary' };
+        const colorClass = colorMap[`[${type}]`] || 'text-inverse-on-surface';
+        
+        const logEntry = document.createElement('div');
+        logEntry.className = 'flex gap-4 log-entry';
+        logEntry.innerHTML = `<span class="text-[#5f5e5e] shrink-0">${timeStr}</span> <span class="${colorClass}">[${type}]</span> <span class="text-inverse-on-surface truncate">${message}</span>`;
+        
+        logStream.appendChild(logEntry);
+        logStream.scrollTop = logStream.scrollHeight;
+    }
+
+    function executeCommand(rawInput) {
+        if (!rawInput.trim()) return;
+        
+        const [cmd, ...args] = rawInput.trim().split(/\s+/);
+        addLog('CMD', `EXECUTING: ${rawInput}`);
+
+        const historyItem = document.createElement('div');
+        historyItem.className = 'group';
+        historyItem.innerHTML = `
+            <div class="flex items-center gap-3 mb-2">
+                <span class="text-secondary shrink-0">root@system:${currentDir}$</span>
+                <span class="text-[#faf7f6] font-bold">${rawInput}</span>
+            </div>
+            <div class="pl-6 border-l border-[#5f5e5e]/30 py-1">
+                ${commands[cmd] ? commands[cmd](args) : `<div class="text-error">Command not found: ${cmd}. Type 'help' for available commands.</div>`}
+            </div>
+        `;
+        
+        if (cmd !== 'clear') {
+            terminalHistory.appendChild(historyItem);
+        }
+
+        document.getElementById('dynamic-prompt').innerText = `root@system:${currentDir}$`;
+        
+        // Use timeout to allow async DOM updates (like 'analyze') to scroll properly
+        setTimeout(() => {
+            const container = document.getElementById('terminal-output-container');
+            container.scrollTop = container.scrollHeight;
+        }, 50);
+    }
+
+    terminalInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            const cmd = terminalInput.value;
+            executeCommand(cmd);
+            if(cmd.trim()) history.push(cmd);
+            historyIndex = history.length;
+            terminalInput.value = '';
+        } else if (e.key === 'ArrowUp') {
+            if (historyIndex > 0) {
+                historyIndex--;
+                terminalInput.value = history[historyIndex];
+            }
+            e.preventDefault();
+        } else if (e.key === 'ArrowDown') {
+            if (historyIndex < history.length - 1) {
+                historyIndex++;
+                terminalInput.value = history[historyIndex];
+            } else {
+                historyIndex = history.length;
+                terminalInput.value = '';
+            }
+            e.preventDefault();
+        }
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!document.getElementById('contact-modal').contains(e.target)) {
+            terminalInput.focus();
+        }
+    });
+
+    // Contact Form Logic
+    window.closeContactModal = () => {
+        const modal = document.getElementById('contact-modal');
+        modal.classList.add('opacity-0');
+        setTimeout(() => modal.classList.add('hidden'), 300);
+        terminalInput.focus();
+    };
+
+    // Handle form submission
+// Handle form submission
+    document.getElementById('contact-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = document.getElementById('comm_name').value;
+        const contactInfo = document.getElementById('comm_contact').value;
+        const msg = document.getElementById('comm_message').value;
+        const status = document.getElementById('comm-status');
+        
+        status.classList.remove('hidden');
+        status.innerText = "ENCRYPTING & SENDING...";
+
+        // The Payload
+        const payload = { 
+            type: "CONTACT_FORM", 
+            name: name, 
+            contactInfo: contactInfo, 
+            message: msg 
+        };
+
+        // YOUR GOOGLE APPS SCRIPT URL GOES HERE
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbzS-t8uXbA9dtcl-EPMa1KXt3YpJWkQ-24pbRv4qUf40CBEQkzI5AITbrNJloqgXC09/exec';
+
+        // Send the data using text/plain to bypass CORS preflight checks
+        fetch(scriptURL, {
+            method: 'POST',
+            body: JSON.stringify(payload),
+            headers: {
+                'Content-Type': 'text/plain;charset=utf-8',
+            }
+        })
+        .then(response => {
+            status.innerText = "TRANSMISSION SUCCESSFUL";
+            status.classList.replace('text-tertiary', 'text-[#faf7f6]');
+            status.classList.remove('animate-pulse');
+            
+            setTimeout(() => {
+                closeContactModal();
+                addLog('INFO', `Secure message received from ${name}`);
+                document.getElementById('contact-form').reset();
+                status.classList.add('hidden');
+                status.classList.replace('text-[#faf7f6]', 'text-tertiary');
+                status.classList.add('animate-pulse');
+            }, 1000);
+        })
+        .catch(error => {
+            console.error('Error!', error.message);
+            status.innerText = "TRANSMISSION FAILED";
+            status.classList.replace('text-tertiary', 'text-error');
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ROOT@CYBER_CONSULTANT: ~</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .cursor-blink {
+            animation: blink 1s step-end infinite;
+        }
+        @keyframes blink {
+            from, to { opacity: 1; }
+            50% { opacity: 0; }
+        }
+        .mono-font {
+            font-family: 'JetBrains Mono', monospace;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-background": "#323232",
+                        "inverse-on-surface": "#9e9c9c",
+                        "secondary-container": "#dbe1ff",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-dim": "#dbd9d9",
+                        "inverse-surface": "#0e0e0e",
+                        "outline": "#7b7a7a",
+                        "on-secondary": "#faf8ff",
+                        "on-primary": "#faf7f6",
+                        "secondary-fixed": "#dbe1ff",
+                        "primary-fixed-dim": "#d7d4d3",
+                        "inverse-primary": "#ffffff",
+                        "on-tertiary": "#faf8ff",
+                        "primary-fixed": "#e5e2e1",
+                        "primary-container": "#e5e2e1",
+                        "on-secondary-fixed": "#003798",
+                        "surface-tint": "#5f5e5e",
+                        "error-container": "#fe8983",
+                        "on-primary-fixed": "#403f3f",
+                        "on-tertiary-container": "#000000",
+                        "surface-container": "#f0eded",
+                        "primary": "#5f5e5e",
+                        "background": "#fcf8f8",
+                        "secondary-dim": "#0049c2",
+                        "surface-container-high": "#eae7e7",
+                        "on-primary-container": "#525151",
+                        "outline-variant": "#b3b1b1",
+                        "on-error": "#fff7f6",
+                        "on-tertiary-fixed-variant": "#f9f7ff",
+                        "surface-bright": "#fcf8f8",
+                        "error-dim": "#4e0309",
+                        "surface-container-highest": "#e4e2e1",
+                        "tertiary-fixed": "#3e76fe",
+                        "surface": "#fcf8f8",
+                        "on-surface-variant": "#5f5f5f",
+                        "surface-variant": "#e4e2e1",
+                        "on-secondary-container": "#0048bf",
+                        "error": "#9f403d",
+                        "tertiary-dim": "#0049c2",
+                        "surface-container-low": "#f6f3f2",
+                        "tertiary": "#0053dc",
+                        "on-surface": "#323232",
+                        "tertiary-container": "#3e76fe",
+                        "secondary": "#0053dc",
+                        "on-primary-fixed-variant": "#5c5b5b",
+                        "on-secondary-fixed-variant": "#0050d4",
+                        "tertiary-fixed-dim": "#2d68f0",
+                        "secondary-fixed-dim": "#c7d3ff",
+                        "on-tertiary-fixed": "#ffffff",
+                        "primary-dim": "#535252",
+                        "on-error-container": "#752121"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"],
+                        "mono": ["JetBrains Mono", "monospace"]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<!-- Script by chatgpt for terminal interface  -->
+ <script>
+const terminalHistory = [];
+const commands = {
+  help: () => `
+Available commands:
+- help
+- whoami
+- sys_info
+- access_vault
+- archive
+- clear
+`,
+  whoami: () => {addLog("AUTH", "Identity query initiated");
+  return `
+IDENTITY: AAYAN_NAYAK
+ROLE: CYBERSECURITY_CONSULTANT
+FOCUS: WEB / API / CLOUD SECURITY
+`;
+},
+  sys_info: () => {addLog("SYS", "Fetching infrastructure metrics");
+  return`
+Nodes: 14/14
+Status: Operational
+Latency: 12ms
+`;
+},
+  access_vault: () => {addLog("AUTH", "Vault access requested");
+  return`
+Playbook_042 → Supply Chain Security
+Command: decrypt_file
+`;
+},
+  archive: () => `
+[COMPLETED] Silent Winter
+[ARCHIVED] Red Cell
+[STABLE] Kernel Hardening
+`,
+  clear: () => {
+    document.getElementById("terminal-output").innerHTML = "";
+    return "";
+  }, 
+ scan: () => {
+  addLog("WARN", "Port scan initiated");
+  setTimeout(() => addLog("WARN", "Suspicious activity detected"), 1000);
+  setTimeout(() => addLog("ERROR", "Firewall triggered - IP logged"), 2000);
+
+  return "Scanning target...";
+}, 
+};
+
+function runCommand(input) {
+  addLog("CMD", `Command executed: ${input}`);
+
+  const output = commands[input] ? commands[input]() : "Command not found";
+
+  if (commands[input]) {
+    addLog("INFO", `${input} completed successfully`);
+  } else {
+    addLog("ERROR", `Unknown command: ${input}`);
+  }
+
+  const terminal = document.getElementById("terminal-output");
+
+  const newLine = document.createElement("div");
+  newLine.innerHTML = `
+    <div><span class="text-secondary">root@cyber_consultant:~$</span> ${input}</div>
+    <div class="pl-6 text-inverse-on-surface">${output}</div>
+  `;
+
+  terminal.appendChild(newLine);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const inputField = document.getElementById("terminal-input");
+
+  inputField.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      const value = inputField.value.trim();
+      runCommand(value);
+      inputField.value = "";
+    }
+  });
+});
+
+function addLog(type, message) {
+  const logStream = document.getElementById("log-stream");
+
+  const time = new Date().toLocaleTimeString();
+
+  const logLine = document.createElement("div");
+  logLine.className = "flex gap-4";
+
+  logLine.innerHTML = `
+    <span class="text-[#5f5e5e] shrink-0">${time}</span>
+    <span class="${
+      type === "ERROR"
+        ? "text-error"
+        : type === "WARN"
+        ? "text-error/80"
+        : "text-secondary"
+    }">[${type}]</span>
+    <span class="text-inverse-on-surface truncate">${message}</span>
+  `;
+</script>
+<!-- End of script for the terminal-->
+
+<body class="bg-inverse-surface text-on-primary font-body overflow-x-hidden selection:bg-tertiary selection:text-white">
+<!-- TopNavBar: Fixed Terminal Header -->
+<header class="bg-[#0e0e0e] text-[#0053dc] font-mono uppercase tracking-widest text-sm w-full top-0 left-0 border-b border-[#5f5e5e]/20 flex justify-between items-center px-6 py-3 fixed z-50">
+<div class="text-lg font-bold text-[#faf7f6] dark:text-[#faf7f6]">ROOT@CYBER_CONSULTANT: ~</div>
+<nav class="hidden md:flex gap-8">
+<a class="text-[#0053dc] dark:text-[#3e76fe] border-b border-[#0053dc] transition-colors duration-150 ease-in-out" href="#">man</a>
+<a class="text-[#5f5e5e] hover:text-[#faf7f6] hover:bg-[#5f5e5e]/10 transition-colors duration-150 ease-in-out" href="#">ssh</a>
+<a class="text-[#5f5e5e] hover:text-[#faf7f6] hover:bg-[#5f5e5e]/10 transition-colors duration-150 ease-in-out" href="#">status</a>
+<a class="text-[#5f5e5e] hover:text-[#faf7f6] hover:bg-[#5f5e5e]/10 transition-colors duration-150 ease-in-out" href="#">exit</a>
+</nav>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-[#5f5e5e] cursor-pointer" data-icon="terminal">terminal</span>
+<span class="material-symbols-outlined text-[#5f5e5e] cursor-pointer" data-icon="fingerprint">fingerprint</span>
+</div>
+</header>
+<!-- SideNavBar: Administrative Interface -->
+<aside class="fixed left-0 top-0 h-full w-64 bg-[#0e0e0e] border-r border-[#5f5e5e]/20 flex flex-col py-8 hidden lg:flex pt-20">
+<div class="px-6 mb-10">
+<div class="font-black text-[#faf7f6] text-xl mb-1">Aayan_n</div>
+<div class="font-mono text-xs text-[#0053dc] opacity-80 uppercase tracking-tighter">Access Level: Admin</div>
+</div>
+<nav class="flex-1 flex flex-col gap-2">
+<a class="text-[#faf7f6] bg-[#0053dc]/10 border-l-4 border-[#0053dc] font-mono text-xs px-6 py-4 flex items-center gap-3 scale-95 transition-transform duration-75" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span> System
+            </a>
+<a class="text-[#5f5e5e] hover:bg-[#5f5e5e]/5 font-mono text-xs px-6 py-4 flex items-center gap-3 scale-95 transition-transform duration-75" href="#">
+<span class="material-symbols-outlined" data-icon="lan">lan</span> Network
+            </a>
+<a class="text-[#5f5e5e] hover:bg-[#5f5e5e]/5 font-mono text-xs px-6 py-4 flex items-center gap-3 scale-95 transition-transform duration-75" href="#">
+<span class="material-symbols-outlined" data-icon="description">description</span> Logs
+            </a>
+<a class="text-[#5f5e5e] hover:bg-[#5f5e5e]/5 font-mono text-xs px-6 py-4 flex items-center gap-3 scale-95 transition-transform duration-75" href="#">
+<span class="material-symbols-outlined" data-icon="lock">lock</span> Vault
+            </a>
+</nav>
+<div class="px-6 mt-auto">
+<div class="p-4 bg-[#5f5e5e]/5 rounded-lg border border-[#5f5e5e]/10">
+<div class="text-[10px] text-[#5f5e5e] mb-2 uppercase tracking-widest">Uptime</div>
+<div class="font-mono text-[#0053dc]">128:44:12:09</div>
+</div>
+</div>
+</aside>
+<!-- Main Content: Terminal Interface -->
+<main class="lg:ml-64 pt-24 pb-12 px-6 md:px-12 min-h-screen max-w-5xl">
+<!-- Terminal Output Section -->
+<!-- <section class="mono-font space-y-8 text-sm md:text-base"> -->
+<!-- Chatgpt code for - Terminal Output Section -->
+    <div id="terminal-output">
+  <!-- existing static content stays here -->
+</div>
+<!-- Command: whoami -->
+<div class="group">
+<div class="flex items-center gap-3 mb-2">
+<span class="text-tertiary">#</span>
+<span class="text-[#faf7f6] font-bold">whoami</span>
+</div>
+<div class="text-inverse-on-surface pl-6 border-l border-[#5f5e5e]/30 py-1">
+<p>IDENTITY: AAYAN_NAYAK.SEC</p>
+<p>ROLE: TMT_CYBER_CONSULTANT</p>
+<p>SPECIALIZATION: ADVERSARIAL_EMULATION // APPLICATION_SEC // NETWORK_SEC // CLOUD_SEC // AI_PT</p>
+</div>
+</div>
+<!-- Command: sys_info -->
+<div class="group">
+<div class="flex items-center gap-3 mb-2">
+<span class="text-tertiary">#</span>
+<span class="text-[#faf7f6] font-bold">sys_info</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 pl-6 border-l border-[#5f5e5e]/30 py-2">
+<div class="p-4 bg-[#5f5e5e]/5 rounded border border-[#5f5e5e]/10">
+<div class="text-[#5f5e5e] text-xs uppercase mb-2">Infrastructure Status</div>
+<div class="flex items-center justify-between">
+<span class="text-[#faf7f6]">Nodes: 14/14</span>
+<span class="px-2 py-0.5 bg-secondary/10 text-secondary text-[10px] rounded-full uppercase font-bold tracking-widest border border-secondary/20">Operational</span>
+</div>
+</div>
+<div class="p-4 bg-[#5f5e5e]/5 rounded border border-[#5f5e5e]/10">
+<div class="text-[#5f5e5e] text-xs uppercase mb-2">Traffic Latency</div>
+<div class="flex items-center justify-between">
+<span class="text-[#faf7f6]">Global Average</span>
+<span class="text-tertiary">12ms</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Bento Grid Content: access_vault -->
+<div class="group">
+<div class="flex items-center gap-3 mb-4">
+<span class="text-tertiary">#</span>
+<span class="text-[#faf7f6] font-bold">access_vault --list</span>
+</div>
+<div class="grid grid-cols-12 gap-4 pl-6 border-l border-[#5f5e5e]/30">
+<!-- Featured Insight -->
+<div class="col-span-12 md:col-span-8 p-8 bg-[#5f5e5e]/5 rounded-xl border border-[#5f5e5e]/10 flex flex-col justify-between relative overflow-hidden group/card hover:bg-[#5f5e5e]/10 transition-colors">
+<div class="relative z-10">
+<span class="text-tertiary text-xs font-bold uppercase tracking-widest mb-4 block">Playbook_042</span>
+<h2 class="text-2xl font-headline text-[#faf7f6] mb-4 leading-tight">Advanced Mitigation Against Supply Chain Poisoning</h2>
+<p class="text-inverse-on-surface font-body max-w-md">A comprehensive guide on auditing third-party dependencies using static analysis and runtime sandboxing.</p>
+</div>
+<div class="mt-8 flex items-center gap-4 relative z-10">
+<button class="bg-secondary text-on-secondary px-6 py-2 rounded-full font-mono text-xs font-bold hover:bg-secondary-dim transition-all">DECRYPT_FILE</button>
+<span class="text-[#5f5e5e] text-xs font-mono">Size: 4.2 MB</span>
+</div>
+<!-- Abstract Graphic -->
+<div class="absolute right-0 top-0 w-1/3 h-full opacity-10 pointer-events-none">
+<div class="w-full h-full bg-gradient-to-l from-tertiary to-transparent"></div>
+</div>
+</div>
+<!-- Side Action Card -->
+<div class="col-span-12 md:col-span-4 p-6 bg-[#5f5e5e]/5 rounded-xl border border-[#5f5e5e]/10 hover:border-tertiary/40 transition-colors flex flex-col items-center justify-center text-center group/btn cursor-pointer">
+<div class="w-12 h-12 bg-tertiary/10 rounded-full flex items-center justify-center text-tertiary mb-4 group-hover/btn:scale-110 transition-transform">
+<span class="material-symbols-outlined" data-icon="vpn_key">vpn_key</span>
+</div>
+<div class="text-[#faf7f6] font-bold font-mono text-sm mb-1">REQ_ACCESS</div>
+<div class="text-[#5f5e5e] text-[10px] uppercase tracking-tighter">Submit PGP Key</div>
+</div>
+<!-- Log Stream Card -->
+<div class="col-span-12 md:col-span-12 p-6 bg-[#0e0e0e] rounded-xl border border-[#5f5e5e]/20 font-mono text-[11px] overflow-hidden">
+<div class="flex items-center justify-between mb-4 pb-2 border-b border-[#5f5e5e]/20">
+<span class="text-[#5f5e5e]">LATEST_LOG_STREAM</span>
+<span class="text-error text-[9px] animate-pulse">● LIVE</span>
+</div>
+<div id="log-stream" class="space-y-1">
+<div class="flex gap-4"><span class="text-[#5f5e5e] shrink-0">21:44:02</span> <span class="text-secondary">[AUTH]</span> <span class="text-inverse-on-surface truncate">SUCCESSFUL LOGIN FROM 192.168.1.104</span></div>
+<div class="flex gap-4"><span class="text-[#5f5e5e] shrink-0">21:44:05</span> <span class="text-secondary">[FILE]</span> <span class="text-inverse-on-surface truncate">ENCRYPTED_DB_DUMP.GZ READ ACCESS GRANTED</span></div>
+<div class="flex gap-4"><span class="text-[#5f5e5e] shrink-0">21:44:12</span> <span class="text-error">[WARN]</span> <span class="text-error/80 truncate">BRUTE_FORCE DETECTED ON PORT 22 - IP_BLOCKED</span></div>
+<div class="flex gap-4"><span class="text-[#5f5e5e] shrink-0">21:44:18</span> <span class="text-secondary">[SYS]</span> <span class="text-inverse-on-surface truncate">GARBAGE_COLLECTION_DAEMON TRIGGERED</span></div>
+<div class="flex gap-4"><span class="text-[#5f5e5e] shrink-0">21:44:18</span> <span class="text-secondary">[SYS]</span> <span class="text-inverse-on-surface truncate">GARBAGE_COLLECTION_DAEMON TRIGGERED</span></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Terminal Input Prompt -->
+<!-- Command: archive --list -->
+<div class="group mt-12">
+<div class="flex items-center gap-3 mb-2">
+<span class="text-secondary">root@cyber_consultant:~$</span>
+<span class="text-[#faf7f6] font-bold">archive --list</span>
+</div>
+</div>
+<!-- Section: project_archive -->
+<div class="group mb-8">
+<div class="flex items-center gap-3 mb-4">
+<span class="text-tertiary">#</span>
+<span class="text-[#faf7f6] font-bold">project_archive</span>
+</div>
+<div class="space-y-3 pl-6 border-l border-[#5f5e5e]/30 py-2">
+<div class="flex items-center gap-4 group/item">
+<span class="text-tertiary text-xs">[COMPLETED]</span>
+<span class="text-inverse-on-surface hover:text-[#faf7f6] transition-colors cursor-default">Operation: Silent Winter</span>
+<span class="text-[#5f5e5e] text-[10px] ml-auto">DEC 2023</span>
+</div>
+<div class="flex items-center gap-4 group/item">
+<span class="text-tertiary text-xs">[ARCHIVED]</span>
+<span class="text-inverse-on-surface hover:text-[#faf7f6] transition-colors cursor-default">Project: Red Cell</span>
+<span class="text-[#5f5e5e] text-[10px] ml-auto">AUG 2023</span>
+</div>
+<div class="flex items-center gap-4 group/item">
+<span class="text-tertiary text-xs">[STABLE]</span>
+<span class="text-inverse-on-surface hover:text-[#faf7f6] transition-colors cursor-default">Kernel Hardening v1.0</span>
+<span class="text-[#5f5e5e] text-[10px] ml-auto">MAY 2023</span>
+</div>
+</div>
+</div><div class="pt-8 mt-12 border-t border-[#5f5e5e]/10">
+<div class="flex items-center gap-3">
+<span class="text-secondary">root@cyber_consultant:~$</span>
+<div class="flex items-center flex-1">
+    <!-- <span class="text-[#faf7f6]">_</span>
+<span class="w-2.5 h-5 bg-tertiary cursor-blink ml-0.5"></span> -->
+<!-- text repleaced by chatgpt cmd -->
+<input 
+  id="terminal-input"
+  class="bg-transparent outline-none text-[#faf7f6] w-full font-mono"
+  placeholder="type a command..."
+/>
+</div>
+</div>
+</div>
+</section>
+<!-- Hidden Links / Playbook Highlights -->
+<section class="mt-24">
+<h3 class="font-mono text-[#5f5e5e] text-xs uppercase tracking-[0.3em] mb-12">Restricted Insights</h3>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<a class="group block border-l border-[#5f5e5e]/20 pl-6 hover:border-tertiary transition-all" href="#">
+<div class="text-[#5f5e5e] text-[10px] mb-2 group-hover:text-tertiary transition-colors">001. ARCHITECTURE</div>
+<div class="text-[#faf7f6] font-headline text-lg group-hover:translate-x-1 transition-transform">Hardened Kernel Specs</div>
+</a>
+<a class="group block border-l border-[#5f5e5e]/20 pl-6 hover:border-tertiary transition-all" href="#">
+<div class="text-[#5f5e5e] text-[10px] mb-2 group-hover:text-tertiary transition-colors">002. OSINT</div>
+<div class="text-[#faf7f6] font-headline text-lg group-hover:translate-x-1 transition-transform">Shadow Recon Techniques</div>
+</a>
+<a class="group block border-l border-[#5f5e5e]/20 pl-6 hover:border-tertiary transition-all" href="#">
+<div class="text-[#5f5e5e] text-[10px] mb-2 group-hover:text-tertiary transition-colors">003. OPS</div>
+<div class="text-[#faf7f6] font-headline text-lg group-hover:translate-x-1 transition-transform">Silent Exfiltration 101</div>
+</a>
+</div>
+</section>
+<!-- Aesthetic Background Elements -->
+<div class="fixed inset-0 pointer-events-none z-[-1] opacity-[0.03] overflow-hidden">
+<div class="absolute top-0 left-0 w-full h-full" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDST1QS-f_h6HvJNuoIZNXTZkzzcwKKDhdc7MQoigvcLhrFgeHRgp59D-SdjpC7_3IsTpIrwmuc9abMdzatZFJwYDDgMRXEdPTJzWhmH-he8NEkNwG8SlrJBvFa6DNr0cxcS7G2DSj3chbWqXDuIOKjF_ckjgQGZxBJyIat8USPWzOQXnkpWqNpbQFGWSXSGmp6IQGQi7Fe-PYPg8n8iN7h05KnmLdMhjgDI7TtiXoHBBBxhvKjNnPTKxjITzvLtlO2x1JzlfhOkn6d');"></div>
+<div class="absolute -top-1/4 -right-1/4 w-1/2 h-1/2 bg-tertiary rounded-full blur-[160px]"></div>
+</div>
+</main>
+<!-- Footer Decoration -->
+<footer class="lg:ml-64 px-12 py-8 border-t border-[#5f5e5e]/10 flex flex-col md:flex-row justify-between items-center gap-4 opacity-40">
+<div class="font-mono text-[10px] text-[#5f5e5e]">
+            SYSTEM_INTEGRITY: 99.8% // ENCRYPTION: AES-256-GCM
+        </div>
+<div class="font-mono text-[10px] text-[#5f5e5e]">
+            © 2024 ELIAS_THORNE_CONSULTING
+        </div>
+</footer>
+</body></html>

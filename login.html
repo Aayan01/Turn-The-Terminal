@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>TTT // AUTHENTICATION GATEWAY</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <style>
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .cursor-blink { animation: blink 1s step-end infinite; }
+        @keyframes blink { from, to { opacity: 1; } 50% { opacity: 0; } }
+        .scanline {
+            width: 100%; height: 100px; z-index: 9999; position: absolute; pointer-events: none;
+            background: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(0,83,220,0.1) 50%, rgba(0,0,0,0) 100%);
+            opacity: 0.1; animation: scanline 8s linear infinite;
+        }
+        @keyframes scanline { 0% { top: -100px; } 100% { top: 100%; } }
+        .glitch-text { position: relative; display: inline-block; }
+        .glitch-text::before, .glitch-text::after {
+            content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        }
+        .glitch-text::before { left: 2px; text-shadow: -1px 0 red; clip: rect(24px, 550px, 90px, 0); animation: glitch-anim 2s infinite linear alternate-reverse; }
+        .glitch-text::after { left: -2px; text-shadow: -1px 0 blue; clip: rect(85px, 550px, 140px, 0); animation: glitch-anim 2s infinite linear alternate-reverse; }
+        @keyframes glitch-anim {
+            0% { clip: rect(10px, 9999px, 31px, 0); }
+            20% { clip: rect(62px, 9999px, 14px, 0); }
+            40% { clip: rect(34px, 9999px, 88px, 0); }
+            60% { clip: rect(96px, 9999px, 42px, 0); }
+            80% { clip: rect(12px, 9999px, 55px, 0); }
+            100% { clip: rect(87px, 9999px, 23px, 0); }
+        }
+    </style>
+    <script id="tailwind-config">
+        // Paste your exact Tailwind config here (same as the main page)
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-background": "#323232", "inverse-on-surface": "#9e9c9c", "secondary-container": "#dbe1ff",
+                        "surface-container-lowest": "#ffffff", "surface-dim": "#dbd9d9", "inverse-surface": "#0e0e0e",
+                        "outline": "#7b7a7a", "on-secondary": "#faf8ff", "on-primary": "#faf7f6", "secondary-fixed": "#dbe1ff",
+                        "primary-fixed-dim": "#d7d4d3", "inverse-primary": "#ffffff", "on-tertiary": "#faf8ff",
+                        "primary-fixed": "#e5e2e1", "primary-container": "#e5e2e1", "on-secondary-fixed": "#003798",
+                        "surface-tint": "#5f5e5e", "error-container": "#fe8983", "on-primary-fixed": "#403f3f",
+                        "on-tertiary-container": "#000000", "surface-container": "#f0eded", "primary": "#5f5e5e",
+                        "background": "#fcf8f8", "secondary-dim": "#0049c2", "surface-container-high": "#eae7e7",
+                        "on-primary-container": "#525151", "outline-variant": "#b3b1b1", "on-error": "#fff7f6",
+                        "on-tertiary-fixed-variant": "#f9f7ff", "surface-bright": "#fcf8f8", "error-dim": "#4e0309",
+                        "surface-container-highest": "#e4e2e1", "tertiary-fixed": "#3e76fe", "surface": "#fcf8f8",
+                        "on-surface-variant": "#5f5f5f", "surface-variant": "#e4e2e1", "on-secondary-container": "#0048bf",
+                        "error": "#9f403d", "tertiary-dim": "#0049c2", "surface-container-low": "#f6f3f2", "tertiary": "#0053dc",
+                        "on-surface": "#323232", "tertiary-container": "#3e76fe", "secondary": "#0053dc",
+                        "on-primary-fixed-variant": "#5c5b5b", "on-secondary-fixed-variant": "#0050d4",
+                        "tertiary-fixed-dim": "#2d68f0", "secondary-fixed-dim": "#c7d3ff", "on-tertiary-fixed": "#ffffff",
+                        "primary-dim": "#535252", "on-error-container": "#752121"
+                    },
+                    "fontFamily": { "headline": ["Manrope"], "body": ["Inter"], "mono": ["JetBrains Mono", "monospace"] }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-inverse-surface text-on-primary font-mono overflow-hidden h-screen flex items-center justify-center relative selection:bg-tertiary selection:text-white">
+    <div class="scanline"></div>
+    
+    <div class="fixed inset-0 pointer-events-none z-[-1] opacity-10">
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-tertiary rounded-full blur-[120px]"></div>
+    </div>
+
+    <main class="w-full max-w-2xl px-6 relative z-10">
+        <div id="boot-sequence" class="space-y-2 text-sm text-[#5f5e5e] mb-8">
+            <div id="boot-1" class="opacity-0">INITIATING SECURE HANDSHAKE... [OK]</div>
+            <div id="boot-2" class="opacity-0">ESTABLISHING ENCRYPTED TUNNEL... [OK]</div>
+            <div id="boot-3" class="opacity-0 text-secondary">AWAITING CREDENTIALS FOR CYBER_CONSULTANT NODE</div>
+        </div>
+
+        <div id="login-box" class="opacity-0 transition-opacity duration-1000 p-8 border border-[#5f5e5e]/30 bg-[#0e0e0e]/80 backdrop-blur-sm shadow-2xl relative overflow-hidden group">
+            
+            <div class="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-tertiary"></div>
+            <div class="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-tertiary"></div>
+
+            <h1 class="text-2xl font-bold text-[#faf7f6] mb-2 tracking-widest uppercase" data-text="Identify_Yourself">Identify_Yourself</h1>
+            <p class="text-xs text-[#5f5e5e] mb-8 uppercase tracking-widest border-b border-[#5f5e5e]/20 pb-4">Provide infromation for  system access</p>
+
+            <form id="auth-form" class="space-y-6">
+                <div class="group/input">
+                    <label class="block text-[10px] text-tertiary mb-1 uppercase tracking-widest">Parameter: Identity</label>
+                    <div class="flex items-center gap-2">
+                        <span class="text-[#5f5e5e]">&gt;</span>
+                        <input type="text" id="sys_name" required autocomplete="off" spellcheck="false" class="bg-transparent border-none outline-none text-[#faf7f6] w-full p-0 text-sm focus:ring-0 placeholder:text-[#5f5e5e]/50" placeholder="e.g. NAME" />
+                    </div>
+                </div>
+
+                <div class="group/input">
+                    <label class="block text-[10px] text-tertiary mb-1 uppercase tracking-widest">Parameter: Designation</label>
+                    <div class="flex items-center gap-2">
+                        <span class="text-[#5f5e5e]">&gt;</span>
+                        <input type="text" id="sys_role" required autocomplete="off" spellcheck="false" class="bg-transparent border-none outline-none text-[#faf7f6] w-full p-0 text-sm focus:ring-0 placeholder:text-[#5f5e5e]/50" placeholder="e.g. ANALYST" />
+                    </div>
+                </div>
+                <!-- Auth_key is encode to give MTI0NDIx, else use the vid in the error page to get the key and try again :D -->
+                <div class="group/input">
+                    <label class="block text-[10px] text-error mb-1 uppercase tracking-widest">Parameter: Auth_Key</label>
+                    <div class="flex items-center gap-2">
+                        <span class="text-error">&gt;</span>
+
+                        <input type="password" id="sys_key" required autocomplete="off" class="bg-transparent border-none outline-none text-[#faf7f6] w-full p-0 text-sm focus:ring-0 placeholder:text-[#5f5e5e]/50 tracking-[0.3em]" placeholder="••••" />
+                    </div>
+                </div>
+
+                <div class="pt-6 flex justify-between items-center">
+                    <div id="auth-status" class="text-xs text-error font-bold opacity-0 transition-opacity">INVALID KEY</div>
+                    <button type="submit" class="bg-[#5f5e5e]/10 border border-[#5f5e5e]/30 hover:border-tertiary hover:bg-tertiary/10 hover:text-tertiary text-inverse-on-surface px-6 py-2 text-xs uppercase tracking-widest transition-all flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[16px]" data-icon="login">login</span>
+                        Execute Auth
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        // Boot Sequence Animation
+        setTimeout(() => document.getElementById('boot-1').classList.remove('opacity-0'), 300);
+        setTimeout(() => document.getElementById('boot-2').classList.remove('opacity-0'), 800);
+        setTimeout(() => document.getElementById('boot-3').classList.remove('opacity-0'), 1400);
+        setTimeout(() => {
+            document.getElementById('login-box').classList.remove('opacity-0');
+            document.getElementById('sys_name').focus();
+        }, 1800);
+
+        // Quirky Glitch effect on hover
+        const title = document.querySelector('h1');
+        title.addEventListener('mouseenter', () => title.classList.add('glitch-text'));
+        title.addEventListener('mouseleave', () => title.classList.remove('glitch-text'));
+
+        // Handle Login Execution
+        document.getElementById('auth-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('sys_name').value.toUpperCase();
+            const role = document.getElementById('sys_role').value.toUpperCase();
+            const key = document.getElementById('sys_key').value;
+            const statusNode = document.getElementById('auth-status');
+            
+            statusNode.classList.remove('opacity-0', 'text-error');
+            statusNode.classList.add('text-secondary', 'animate-pulse');
+            statusNode.innerText = "AUTHENTICATING...";
+
+            setTimeout(() => {
+                // THE PIN CHECK
+                if (key === "124421") {
+                    // Success Path
+                    localStorage.setItem('ttt_identity', name);
+                    localStorage.setItem('ttt_role', role);
+                    
+                    statusNode.classList.remove('animate-pulse', 'text-error');
+                    statusNode.classList.add('text-[#faf7f6]');
+                    statusNode.innerText = "ACCESS GRANTED. REDIRECTING...";
+                    
+                    document.getElementById('login-box').classList.add('glitch-text');
+                    
+                    setTimeout(() => {
+                        window.location.href = 'homepage.html'; // Goes to your main terminal
+                    }, 1000);
+
+                } else {
+                    // Failure Path (Wrong PIN)
+                    statusNode.classList.remove('animate-pulse', 'text-secondary');
+                    statusNode.classList.add('text-error', 'glitch-text');
+                    statusNode.innerText = "SKILL ISSUE DETECTED. REDIRECTING...";
+                    
+                    setTimeout(() => {
+                        window.location.href = 'error.html'; // Sends them to the shadow realm
+                    }, 1500);
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
